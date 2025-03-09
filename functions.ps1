@@ -105,9 +105,9 @@ class SpotifyAPI {
 		) VALUES (
 			$($track.user_id),
 			'$($track.song_id)',
-			'$($track.song_name)',
-			'$($track.album_name)',
-			'$($track.artists)',
+			'$($track.song_name.replace("'","''").replace('"','\"'))',
+			'$($track.album_name.replace("'","''").replace('"','\"'))',
+			'$($track.artists.replace("'","''").replace('"','\"'))',
 			'$(Get-Date $track.played_at -Format "yyyy-MM-dd HH:mm:ss")',
 			$($track.progress_ms),
 			$($track.duration_ms),
