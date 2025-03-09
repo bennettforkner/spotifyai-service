@@ -9,7 +9,7 @@ Write-Host "Starting..."
 
 . "$($config.service_root)/functions.ps1"
 
-$secondsInterval = 10
+$secondsInterval = $config.playback_check_seconds
 $userId = 1
 
 
@@ -71,7 +71,7 @@ while ($true) {
 		$spotify.UpdateTrackHistory($lastSong)
 	}
 	
-	if ($index % 10 -eq 0 -AND !$isPlayingAIPlaylist) {
+	if (($index % $config.playlist_rebuild_runs) -eq 0 -AND !$isPlayingAIPlaylist) {
 
 		Write-Host "Rebuilding AI Playlist..."
 

@@ -10,5 +10,9 @@
 		"host": "",
 		"port": 0,
 		"database": ""
+	},
+	"frequency": {
+		"playback_check_seconds": 10,
+		"playlist_rebuild_runs": 30
 	}
 }
