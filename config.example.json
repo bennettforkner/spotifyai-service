@@ -2,6 +2,13 @@
 	"client_id": "",
 	"client_secret": "",
 	"googleai_key": "",
-	"transcript_path": "",
-	"service_root": ""
+	"transcript_path": "/var/log/spotifyai.log",
+	"service_root": "/usr/share/spotifyai",
+	"database": {
+		"username": "",
+		"password": "",
+		"host": "",
+		"port": 0,
+		"database": ""
+	}
 }
