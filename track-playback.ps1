@@ -94,7 +94,7 @@ while ($true) {
 			You should respond with a JSON array called 'recommended_additions' and one called 'recommended_removals'. Each should have an a 'name' key for the name of the suggested song and an 'artist' key for the artist's name. The recommended_removals array objects should also have an 'uri' property with the spotify uri for that song. If the playlist is good as-is, there may be no need to add or remove songs.
 			
 			There should also be a JSON property for the description for the collection of songs in the playlist limited to 120 characters max called 'playlist_description'. This description should be unique and fun to match the vibes of the songs. You will be provided the current playlist description and will determine whether or not it should change. If so, return a new playlist_description, otherwise, return the same one as provided.",
-			"queue history in json: " + ($songHistory | Where-Object {$_.played_at -gt (Get-Date).AddHours(-1)} | Select-Object name, album, artists, skipped, played_at -Last 20 | ConvertTo-Json),
+			"queue history in json: " + ($songHistory | Where-Object {$_.played_at -gt (Get-Date).AddHours(-2)} | Select-Object name, album, artists, skipped, played_at -Last 20 | ConvertTo-Json),
 			"current playlist in json: " + ($currentPlaylistItems | ConvertTo-Json),
 			"current playlist description: " + $currentPlaylist.description
 		)
