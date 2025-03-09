@@ -106,15 +106,19 @@ while ($true) {
 		$recommendations = $aiResp.recommended_additions
 		$removals = $aiResp.recommended_removals
 
-		Write-Host "Additions:"
+		
+
+		$summary = "Added $($recommendations.Count) songs and removed $($removals.Count) songs.`nDescription: $($aiResp.playlist_description)`n`nAdded:`n"
 		foreach ($recommendation in $recommendations) {
-			Write-Host "`t" + $recommendation.name
+			$summary += "`t" + $recommendation.name + "`n"
 		}
 
-		Write-Host "Removals:"
+		$summary += "`n`nRemovals:`n"
 		foreach ($removal in $removals) {
-			Write-Host "`t" + $removal.name
+			$summary += "`t" + $removal.name + "`n"
 		}
+
+		$spotify.InsertPlaylistChange($summary)
 
 		$urisToAdd = @()
 		foreach ($recommendation in $recommendations) {

@@ -124,6 +124,19 @@ class SpotifyAPI {
 		$this.UpdateSQL($query)
 	}
 
+	[void] InsertPlaylistChange($summary) {
+		$query = "INSERT INTO playlist_changes (
+			user_id,
+			changed_at,
+			summary
+		) VALUES (
+			$($this.user_id),
+			'$(Get-Date -Format "yyyy-MM-dd HH:mm:ss")',
+			'$($summary.replace("'","''").replace('"','\"'))'
+		)"
+		$this.UpdateSQL($query)
+	}
+
 	[void] RefreshToken() {
 		$url = "https://accounts.spotify.com/api/token"
 		$headers = @{
