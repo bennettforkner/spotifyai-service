@@ -117,19 +117,11 @@ class SpotifyAPI {
 	}
 
 	[void] UpdateTrackHistory([TrackHistory] $track) {
-		if ($track.skipped -ne $null) {
-			$query = "UPDATE track_history SET
-				skipped = $($track.skipped ? 1 : 0)
-			WHERE id = $($track.id)"
-			$this.UpdateSQL($query)
-			return
-		}
-		if ($track.progress_ms -ne $null) {
-			$query = "UPDATE track_history SET
-				progress_ms = $($track.progress_ms)
-			WHERE id = $($track.id)"
-			$this.UpdateSQL($query)
-		}
+		$query = "UPDATE track_history SET
+			skipped = $($track.skipped ? 1 : 0),
+			progress_ms = $($track.progress_ms)
+		WHERE id = $($track.id)"
+		$this.UpdateSQL($query)
 	}
 
 	[void] RefreshToken() {

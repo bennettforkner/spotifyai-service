@@ -43,7 +43,7 @@ while ($true) {
 	$isPlayingAIPlaylist = ($player.context.type -eq 'playlist' -AND $player.context.uri -like "*$($playlistId)")
 	
 	$index++
-	Write-Host "$index"
+	#Write-Host "$index"
 
 	if ($player.item.id -ne $lastSong.song_id) {
 		$trackHistoryRecord = [TrackHistory]::new(@{
@@ -105,6 +105,16 @@ while ($true) {
 
 		$recommendations = $aiResp.recommended_additions
 		$removals = $aiResp.recommended_removals
+
+		Write-Host "Additions:"
+		foreach ($recommendation in $recommendations) {
+			Write-Host "`t" + $recommendation.name
+		}
+
+		Write-Host "Removals:"
+		foreach ($removal in $removals) {
+			Write-Host "`t" + $removal.name
+		}
 
 		$urisToAdd = @()
 		foreach ($recommendation in $recommendations) {
