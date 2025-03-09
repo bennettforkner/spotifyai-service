@@ -40,13 +40,9 @@ while ($true) {
 		continue
 	}
 
-	if ($player.context.type -eq 'playlist' -AND $player.context.uri -like "*$($playlistId)") {
-		# Write-Host "Playling from AI playlist"
-		Start-Sleep $secondsInterval
-		continue
-	} else {
-		$index++
-	}
+	$isPlayingAIPlaylist = ($player.context.type -eq 'playlist' -AND $player.context.uri -like "*$($playlistId)")
+	
+	$index++
 	Write-Host "$index"
 
 	if ($player.item.id -ne $lastSong.song_id) {
@@ -75,7 +71,7 @@ while ($true) {
 		$spotify.UpdateTrackHistory($lastSong)
 	}
 	
-	if ($index % 10 -eq 0) {
+	if ($index % 10 -eq 0 -AND !$isPlayingAIPlaylist) {
 
 		$text = @(
 			"You are a bot whose job is to recommend music to users based on their recent listening history. You will be given a list of songs that have been played in JSON format and you should give 20-30 recommendations for names of songs that should be added to a playlist of similar music. Also place more value on more recently-played songs and devalue songs that have been skipped. You should prefer to switch artists rather than repeating the same artist. You should not recommend the same song multiple times. You should respond with a JSON object called recommendations that has an a name key for the name of the suggested song, an artist key for the artist's name, and a message key explaining why the song was suggested. There should also be a JSON property for the description for the collection of songs to be added to the playlist limited to 120 characters max called playlist_description.",
