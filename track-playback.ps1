@@ -110,12 +110,12 @@ while ($true) {
 
 		$summary = "Added $($recommendations.Count) songs and removed $($removals.Count) songs.`nDescription: $($aiResp.playlist_description)`n`nAdded:`n"
 		foreach ($recommendation in $recommendations) {
-			$summary += "`t" + $recommendation.name + "`n"
+			$summary += "`t$($recommendation.name)`n"
 		}
 
 		$summary += "`n`nRemovals:`n"
 		foreach ($removal in $removals) {
-			$summary += "`t" + $removal.name + "`n"
+			$summary += "`t$($removal.name)`n"
 		}
 
 		$spotify.InsertPlaylistChange($summary)
