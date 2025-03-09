@@ -128,17 +128,17 @@ while ($true) {
 
 		if ($removals.Count -gt 0) {
 			# delete all songs from playlist
-			$spotify.Invoke("/playlists/$playlistId/tracks", "DELETE", @{
+			$resp = $spotify.Invoke("/playlists/$playlistId/tracks", "DELETE", @{
 				"tracks"=($removals | Select-Object uri)
-			}) | Out-Null
+			})
 		}
 
 		# add all songs to playlist
-		$spotify.Invoke("/playlists/$playlistId/tracks?uris=$($urisToAdd -join ",")", "POST") | Out-Null
+		$resp = $spotify.Invoke("/playlists/$playlistId/tracks?uris=$($urisToAdd -join ",")", "POST")
 
-		$spotify.Invoke("/playlists/$playlistId", "PUT", @{
+		$resp = $spotify.Invoke("/playlists/$playlistId", "PUT", @{
 			"description"=$aiResp.playlist_description
-		}) | Out-Null
+		})
 
 	}
 
