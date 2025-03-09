@@ -73,16 +73,38 @@ while ($true) {
 	
 	if ($index % 10 -eq 0 -AND !$isPlayingAIPlaylist) {
 
+		Write-Host "Rebuilding AI Playlist..."
+
+		$currentPlaylistItems = $spotify.Invoke("/playlists/$playlistId/tracks", "GET")
+		$currentPlaylistItems = $currentPlaylistItems.items | Select-Object added_at,
+			@{E={$_.track.uri};N="uri"},
+			@{E={$_.track.name};N="name"},
+			@{E={$_.track.artists.name -join " & "};N="artists"},
+			@{E={$_.track.album.name};N="album"}
+
+		$currentPlaylist = $spotify.Invoke("/playlists/$playlistId", "GET")
+
 		$text = @(
-			"You are a bot whose job is to recommend music to users based on their recent listening history. You will be given a list of songs that have been played in JSON format and you should give 20-30 recommendations for names of songs that should be added to a playlist of similar music. Also place more value on more recently-played songs and devalue songs that have been skipped. You should prefer to switch artists rather than repeating the same artist. You should not recommend the same song multiple times. You should respond with a JSON object called recommendations that has an a name key for the name of the suggested song, an artist key for the artist's name, and a message key explaining why the song was suggested. There should also be a JSON property for the description for the collection of songs to be added to the playlist limited to 120 characters max called playlist_description.",
-			"queue history in json: " + ($songHistory | Where-Object {$_.played_at -gt (Get-Date).AddHours(-1)} | Select-Object name, album, artists, skipped, played_at -Last 20 | ConvertTo-Json)
+			"You are a bot whose job is to recommend music to users based on their recent listening history.
+			
+			You will be given a list of songs that have been played in JSON format and you should give recommendations for names of songs that should be added to a playlist of similar music. Also place more value on the vibes of more recently-played songs and devalue songs that have been skipped. Recently played songs should not show up in the playlist. You should prefer to switch artists rather than repeating the same artist. You should not recommend the same song multiple times. The playlist should always have 20-30 songs.
+
+			You will also be given the record of the current songs in the recommendations playlist. You should respond with a list of songs to remove, if any, and a list of songs to add. Pay attention to the added_at field as songs shouldn't stay on the playlist for too long.
+			
+			You should respond with a JSON array called 'recommended_additions' and one called 'recommended_removals'. Each should have an a 'name' key for the name of the suggested song and an 'artist' key for the artist's name. The recommended_removals array objects should also have an 'uri' property with the spotify uri for that song. If the playlist is good as-is, there may be no need to add or remove songs.
+			
+			There should also be a JSON property for the description for the collection of songs in the playlist limited to 120 characters max called 'playlist_description'. This description should be unique and fun to match the vibes of the songs. You will be provided the current playlist description and will determine whether or not it should change. If so, return a new playlist_description, otherwise, return the same one as provided.",
+			"queue history in json: " + ($songHistory | Where-Object {$_.played_at -gt (Get-Date).AddHours(-1)} | Select-Object name, album, artists, skipped, played_at -Last 20 | ConvertTo-Json),
+			"current playlist in json: " + ($currentPlaylistItems | ConvertTo-Json),
+			"current playlist description: " + $currentPlaylist.description
 		)
 
 		$aiResp = Ask-AI $text
 
 		$aiResp = $aiResp.replace("``````json", "").replace("``````", "").trim() | ConvertFrom-Json
 
-		$recommendations = $aiResp.recommendations
+		$recommendations = $aiResp.recommended_additions
+		$removals = $aiResp.recommended_removals
 
 		$urisToAdd = @()
 		foreach ($recommendation in $recommendations) {
@@ -90,12 +112,12 @@ while ($true) {
 			$urisToAdd += $resp.tracks.items[0].uri
 		}
 
-		# delete all songs from playlist
-		$currentPlaylistItems = $spotify.Invoke("/playlists/$playlistId/tracks", "GET")
-		$currentPlaylistItems = $currentPlaylistItems.items.track | Select-Object uri
-		$spotify.Invoke("/playlists/$playlistId/tracks", "DELETE", @{
-			"tracks"=$currentPlaylistItems
-		}) | Out-Null
+		if ($removals.Count -gt 0) {
+			# delete all songs from playlist
+			$spotify.Invoke("/playlists/$playlistId/tracks", "DELETE", @{
+				"tracks"=($removals | Select-Object uri)
+			}) | Out-Null
+		}
 
 		# add all songs to playlist
 		$spotify.Invoke("/playlists/$playlistId/tracks?uris=$($urisToAdd -join ",")", "POST") | Out-Null
