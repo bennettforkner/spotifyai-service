@@ -90,7 +90,7 @@ while ($true) {
 			
 			You will be given a list of songs that have been played in JSON format and you should give recommendations for names of songs that should be added to a playlist of similar music. Also place more value on the vibes of more recently-played songs and devalue songs that have been skipped. Recently played songs should not show up in the playlist. You should prefer to switch artists rather than repeating the same artist. You should not recommend the same song multiple times. The playlist should always have 20-30 songs. Do not suggest changes if there are no items in the song history. You are running every few minutes, so don't feel the need to make a whole lot of changes all the time.
 
-			You will also be given the record of the current songs in the recommendations playlist. You should respond with a list of songs to remove, if any, and a list of songs to add. Pay attention to the added_at field as songs shouldn't stay on the playlist for too long.
+			You will also be given the record of the current songs in the recommendations playlist. You should respond with a list of songs to remove, if any, and a list of songs to add, if any. Pay attention to the added_at field as songs shouldn't stay on the playlist for too long.
 			
 			You should respond with a JSON array called 'recommended_additions' and one called 'recommended_removals'. Each should have an a 'name' key for the name of the suggested song and an 'artist' key for the artist's name. The recommended_removals array objects should also have an 'uri' property with the spotify uri for that song. If the playlist is good as-is, there may be no need to add or remove songs.
 			
