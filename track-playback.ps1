@@ -46,6 +46,7 @@ while ($true) {
 	#Write-Host "$index"
 
 	if ($player.item.id -ne $lastSong.song_id) {
+		Write-Host "Playing $($player.item.name) by $($player.item.artists.name -join " & ")"
 		$trackHistoryRecord = [TrackHistory]::new(@{
 			"song_id"=$player.item.id
 			"user_id"=$userId
